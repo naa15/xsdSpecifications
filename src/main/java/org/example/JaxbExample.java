@@ -36,9 +36,13 @@ public class JaxbExample
             Schema employeeSchema = sf.newSchema(new File(xsdFile));
             jaxbUnmarshaller.setSchema(employeeSchema);
 
+            System.out.println("Before unmarshalling");
+
+//
             //Unmarshal xml file
             Employee employee = (Employee) jaxbUnmarshaller.unmarshal(new File(xmlFile));
 
+            System.out.println("After unmarshalling");
             System.out.println(employee);
         }
         catch (JAXBException | SAXException e)
