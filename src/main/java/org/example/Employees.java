@@ -1,22 +1,22 @@
 package org.example;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "employees")
+@XmlSeeAlso({Employee.class})
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Employees implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Employee> list = new ArrayList<Employee>();
+    private ArrayList<Employee> list;
 
     public Employees() {
         super();
+        list = new ArrayList<Employee>();
     }
 
     //Setters and Getters
@@ -25,6 +25,11 @@ public class Employees implements Serializable {
         for (int i = 0; i < employee.size(); i++) {
             this.list.add(employee.get(i));
         }
+    }
+
+    @XmlElement(name = "employee")
+    public List<Employee> getEmployees() {
+        return list;
     }
 
     @Override
