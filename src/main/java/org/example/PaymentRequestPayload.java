@@ -5,23 +5,6 @@ public class PaymentRequestPayload {
     private String name;
     private String tag="";
     private String occur;
-
-    @Override
-    public String toString() {
-        return "PaymentRequestPayload{" +
-                "lvl=" + lvl +
-                ", name='" + name + '\'' +
-                ", tag='" + tag + '\'' +
-                ", occur='" + occur + '\'' +
-                ", type='" + type + '\'' +
-                ", code='" + code + '\'' +
-                ", validationRule='" + validationRule + '\'' +
-                ", path='" + path + '\'' +
-                ", definition='" + definition + '\'' +
-                ", fieldDefinition='" + fieldDefinition + '\'' +
-                '}';
-    }
-
     private String type="";
     private String code="";
     private String validationRule="";
@@ -112,6 +95,22 @@ public class PaymentRequestPayload {
 
     public String getFieldDefinition() {
         return fieldDefinition;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentRequestPayload{" +
+                "lvl=" + lvl +
+                ", name='" + name + '\'' +
+                ", tag='" + tag + '\'' +
+                ", occur='" + occur + '\'' +
+                ", type='" + type + '\'' +
+                ", code='" + code + '\'' +
+                ", validationRule='" + validationRule + '\'' +
+                ", path='" + path + '\'' +
+                ", definition='" + definition + '\'' +
+                ", fieldDefinition='" + fieldDefinition + '\'' +
+                '}';
     }
 
 }

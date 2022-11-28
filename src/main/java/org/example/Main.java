@@ -6,14 +6,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//        System.out.println("Hello world!");
         String filename = "Payment Request Payload.csv";
         try {
             File myObj = new File(filename);
             Scanner myReader = new Scanner(myObj);
             myReader.useDelimiter(",");
             while (myReader.hasNext()) {
-//                String data = myReader.next();
                 PaymentRequestPayload p = new PaymentRequestPayload();
                 String lvl = myReader.next();
                 p.setLvl(Integer.valueOf(lvl));
@@ -37,27 +35,20 @@ public class Main {
                 }
                 p.setPath(myReader.next());
                 String definition = myReader.next();
-                while(true) {
+                while(myReader.hasNext()) {
                     String s = myReader.next();
-                    if(s.length() != 0) {
+//                    if(! s.equals("") && !s.equals("\r\n") && !s.equals("\n") ) {
+                    if(!s.endsWith("\n")) {
                         definition = definition + s;
-                    } else {
-                        p.setDefinition();
+                    } else{
                         break;
                     }
                 }
-                p.setFieldDefinition(myReader.next());
+                p.setDefinition(definition);
 
                 System.out.println(p.toString());
-                myReader.next();
-//                System.out.println(data);
-//                System.out.println("new one:");
-//                allData.add(data);
-            }
-//            convert();
 
-            // /Request/RequestPayload/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf/RmtInf/Strd/AddtlRmtInf
-            //
+            }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
