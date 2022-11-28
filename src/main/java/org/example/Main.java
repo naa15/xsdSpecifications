@@ -20,7 +20,7 @@ public class Main {
                 p.setOccur(myReader.next());
                 String type = myReader.next();
                 if(p.getTag().equals("")) {
-                    p.setCode(type);
+                    p.setValue(type);
                 } else {
                     while(true) {
                         String s = myReader.next();
