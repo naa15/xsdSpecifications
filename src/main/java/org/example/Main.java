@@ -25,7 +25,7 @@ public class Main {
                     while(true) {
                         String s = myReader.next();
                         if(s.length() != 0 && !s.startsWith("-")) {
-                            type = type + s;
+                            type = type + ',' + s;
                         } else {
                             p.setType(type);
                             p.setValidationRule(s);
@@ -46,7 +46,15 @@ public class Main {
                 }
                 p.setDefinition(definition);
 
-                System.out.println(p.toString());
+                if(! p.isDate() && ! p.isChoice() && ! p.getType().equals("") && ! p.isTextWithLength() && ! p.isText()
+                    && ! p.isBoolean()){
+                    System.out.println("start" + p.getType() + "end");
+                }
+
+//                if (p.isTextWithLength()) {
+//                    System.out.println(p.getTag() + "  "  + p.getLength());
+//                }
+                //                System.out.println(p.toString());
 
             }
             myReader.close();
