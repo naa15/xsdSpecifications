@@ -16,8 +16,9 @@ public class PaymentRequestPayload {
     private String date;
     private String dateTime;
     private String choiceType;
-    private String length;
-    private String bool;
+    private String maxLength;
+    private String minLength;
+    private String regex;
 
     public PaymentRequestPayload() {
 
@@ -52,14 +53,16 @@ public class PaymentRequestPayload {
             formatChoiceType(type);
         }
         if(isText()) {
-
         }
         if(isTextWithLength()) {
             formatTextType(type);
         }
         if(isBoolean()) {
-
         }
+    }
+
+    public boolean isDecimal() {
+        return type.length() >= 13 && (type.substring(1,13).equals("0 <= decimal") || type.substring(1,8).equals("decimal"));
     }
 
     public boolean isBoolean() {
@@ -156,11 +159,17 @@ public class PaymentRequestPayload {
         return dateTime;
     }
 
-    public String getLength() {
-        return length;
+    public String getMaxLength() {
+        return maxLength;
     }
 
+    public String getMinLength() {
+        return minLength;
+    }
 
+    public String getRegex() {
+        return regex;
+    }
     @Override
     public String toString() {
         return "PaymentRequestPayload{" +
@@ -216,22 +225,31 @@ public class PaymentRequestPayload {
 
 
     private void formatTextType(String type) {
-        String res = "";
+        String mx = "";
+        String mn = "";
 
         for (int i = 0; i < type.length(); i++) {
             if (type.charAt(i) == '{') {
                 i++;
                 while(type.charAt(i) != '}') {
                     if(type.charAt(i) == ',') {
-                        res = "";
+                        mn = mx;
+                        mx = "";
                     } else {
-                        res += type.charAt(i);
+                        mx += type.charAt(i);
                     }
                     i++;
                 }
                 break;
             }
         }
-        length = "Max" + res + "Text";
+        maxLength = "Max" + mx + "Text";
+        minLength = "Min" + mn + "Text";
+        regex = type.substring(5,type.length()-1);
     }
+
+    // comparatoris dawera ro araylistshi shevinaxot yvelaperi
+    // type-s gaweris dros amdeni methodi ro ar iyos sachiro wesirad mogvareba
+
+    // xsd-ebis libraryze gadasvla
 }

@@ -46,11 +46,18 @@ public class Main {
                 }
                 p.setDefinition(definition);
 
-                if(! p.isDate() && ! p.isChoice() && ! p.getType().equals("") && ! p.isTextWithLength() && ! p.isText()
-                    && ! p.isBoolean()){
-                    System.out.println("start" + p.getType() + "end");
-                }
+//                if(! p.isDate() && ! p.isChoice() && ! p.getType().equals("")
+//                    && ! p.isBoolean() && !p.isDecimal()){
+//                    System.out.println("start" + p.getType() + "end");
+//                }
 
+//                if(p.isTextWithLength()) {
+//                    System.out.println(p.getRegex());
+//                }
+//                if(p.isTextWithLength()) {
+//                    System.out.println("Tag: " + p.getTag() + "\nType is: " + p.getType()+ "\nMax Length is: " + p.getMaxLength() + "\nMin Length is: " +p.getMinLength()
+//                        + "\nRegex:" + p.getRegex());
+//                }
 //                if (p.isTextWithLength()) {
 //                    System.out.println(p.getTag() + "  "  + p.getLength());
 //                }
