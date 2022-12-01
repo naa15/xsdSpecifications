@@ -1,6 +1,6 @@
 package org.example;
 
-public class PaymentRequestPayload {
+public class PaymentRequestPayload implements Comparable<PaymentRequestPayload>  {
     private int lvl;
     private String name;
     private String tag="";
@@ -49,15 +49,8 @@ public class PaymentRequestPayload {
         if(isDate()) {
             formatDate(type);
         }
-        if(isChoice()) {
-            formatChoiceType(type);
-        }
-        if(isText()) {
-        }
         if(isTextWithLength()) {
             formatTextType(type);
-        }
-        if(isBoolean()) {
         }
     }
 
@@ -219,11 +212,6 @@ public class PaymentRequestPayload {
         }
     }
 
-    private void formatChoiceType(String type) {
-        choiceType = "Choice";
-    }
-
-
     private void formatTextType(String type) {
         String mx = "";
         String mn = "";
@@ -248,8 +236,14 @@ public class PaymentRequestPayload {
         regex = type.substring(5,type.length()-1);
     }
 
-    // comparatoris dawera ro araylistshi shevinaxot yvelaperi
-    // type-s gaweris dros amdeni methodi ro ar iyos sachiro wesirad mogvareba
+    @Override
+    public int compareTo(PaymentRequestPayload o) {
+        if (lvl >= o.lvl) {
+            return 1;
+        } else if (lvl < o.lvl) {
+            return -1;
+        } else return 0;
+    }
 
     // xsd-ebis libraryze gadasvla
 }

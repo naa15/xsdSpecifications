@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-   <xs:element name="employees" type="employees"/>
- 
+
   <xs:element name="department" type="department"/>
  
   <xs:element name="employee" type="employee"/>
 
-  <xs:complexType name="employees">
-    <xs:sequence>
-      <xs:element name="employee" type="employee" maxOccurs="unbounded">
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
+<!--  <xs:element name="employees" type="employees"/>-->
+
+<!--  <xs:complexType name="employees">-->
+<!--    <xs:sequence>-->
+<!--      <xs:element name="employee" type="employee" maxOccurs="unbounded">-->
+<!--      </xs:element>-->
+<!--    </xs:sequence>-->
+<!--  </xs:complexType>-->
 
   <xs:complexType name="employee">
     <xs:sequence>

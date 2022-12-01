@@ -1,8 +1,4 @@
-Index,Lvl,Name,XML Tag,Mult,Type / Code,Validation Rule Errors,Path,Definition,Field definition in connect channel   
-,,,,,,,,,
-,,,,,,,,,
-,,,,,,,,,
-,0,Customer Credit Transfer Initiation,<CstmrCdtTrfInitn>,,,,/Request/RequestPayload/CstmrCdtTrfInitn,"Scope
+0,Customer Credit Transfer Initiation,<CstmrCdtTrfInitn>,,,,/Request/RequestPayload/CstmrCdtTrfInitn,"Scope
 The CustomerCreditTransferInitiation message is sent by the initiating party to the forwarding agent or debtor agent. It is used to request movement of funds from the debtor account to a creditor.
 Usage
 The CustomerCreditTransferInitiation message can contain one or more customer credit transfer instructions.

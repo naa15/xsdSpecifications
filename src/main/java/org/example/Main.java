@@ -2,11 +2,18 @@ package org.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
-
 public class Main {
+
+    private static ArrayList<PaymentRequestPayload> csvInfo = new ArrayList<PaymentRequestPayload>();
     public static void main(String[] args) {
         String filename = "Payment Request Payload.csv";
+        readCSVfile(filename);
+
+    }
+
+    private static void readCSVfile(String filename) {
         try {
             File myObj = new File(filename);
             Scanner myReader = new Scanner(myObj);
@@ -24,7 +31,7 @@ public class Main {
                 } else {
                     while(true) {
                         String s = myReader.next();
-                        if(s.length() != 0 && !s.startsWith("-")) {
+                        if(s.length() != 0 && ! s.startsWith("-")) {
                             type = type + ',' + s;
                         } else {
                             p.setType(type);
@@ -47,29 +54,18 @@ public class Main {
                 p.setDefinition(definition);
 
 //                if(! p.isDate() && ! p.isChoice() && ! p.getType().equals("")
-//                    && ! p.isBoolean() && !p.isDecimal()){
+//                    && ! p.isBoolean() && ! p.isDecimal() && ! p.isTextWithLength()){
 //                    System.out.println("start" + p.getType() + "end");
 //                }
+//                System.out.println(p.toString());
 
-//                if(p.isTextWithLength()) {
-//                    System.out.println(p.getRegex());
-//                }
-//                if(p.isTextWithLength()) {
-//                    System.out.println("Tag: " + p.getTag() + "\nType is: " + p.getType()+ "\nMax Length is: " + p.getMaxLength() + "\nMin Length is: " +p.getMinLength()
-//                        + "\nRegex:" + p.getRegex());
-//                }
-//                if (p.isTextWithLength()) {
-//                    System.out.println(p.getTag() + "  "  + p.getLength());
-//                }
-                //                System.out.println(p.toString());
-
+                csvInfo.add(p);
             }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-
     }
 
 //    private static void xmlBeansTest(String xsdFile) throws XmlException, IOException {
