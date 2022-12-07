@@ -238,12 +238,9 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
 
     @Override
     public int compareTo(PaymentRequestPayload o) {
-        if (lvl >= o.lvl) {
-            return 1;
-        } else if (lvl < o.lvl) {
-            return -1;
-        } else return 0;
+        if(tag == o.tag ) return 0;
+        if (lvl >= o.lvl) return 1;
+        return -1;
     }
 
-    // xsd-ebis libraryze gadasvla
 }
