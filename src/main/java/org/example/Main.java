@@ -2,10 +2,7 @@ package org.example;
 
 import org.apache.xmlbeans.*;
 
-import javax.xml.validation.Schema;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,14 +10,42 @@ import java.util.Scanner;
 public class Main {
 
     private static ArrayList<PaymentRequestPayload> csvInfo = new ArrayList<PaymentRequestPayload>();
+    private static ArrayList<String> results = new ArrayList<String>();
     public static void main(String[] args) throws XmlException, IOException {
         String filename = "Payment Request Payload.csv";
         readCSVfile(filename);
 
-//        String xsdFile = "employee.xsd";
-
         String xsdFile = "pain.001.001.11.xsd";
-        xmlBeansTest(xsdFile);
+        readXSDFile(xsdFile);
+
+        String outputFile = "output.txt";
+        writeInFile(outputFile);
+    }
+
+    private static void writeInFile(String outputFile) {
+        try {
+            File myObj = new File(outputFile);
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+            try {
+                FileWriter myWriter = new FileWriter(outputFile);
+                for (int i = 0; i < results.size(); i++) {
+                    myWriter.write(results.get(i));
+                    myWriter.write('\n');
+                }
+                myWriter.close();
+                System.out.println("Successfully wrote to the output file.");
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     private static void readCSVfile(String filename) {
@@ -54,7 +79,6 @@ public class Main {
                 String definition = myReader.next();
                 while(myReader.hasNext()) {
                     String s = myReader.next();
-//                    if(! s.equals("") && !s.equals("\r\n") && !s.equals("\n") ) {
                     if(!s.endsWith("\n")) {
                         definition = definition + s;
                     } else{
@@ -63,23 +87,17 @@ public class Main {
                 }
                 p.setDefinition(definition);
 
-//                if(! p.isDate() && ! p.isChoice() && ! p.getType().equals("")
-//                    && ! p.isBoolean() && ! p.isDecimal() && ! p.isTextWithLength()){
-//                    System.out.println("start" + p.getType() + "end");
-//                }
-//                System.out.println(p.toString());
-
                 csvInfo.add(p);
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("File name that was provided doesn't exist.");
             e.printStackTrace();
         }
 
     }
 
-    private static void xmlBeansTest(String xsdFile) throws XmlException, IOException {
+    private static void readXSDFile(String xsdFile) throws XmlException, IOException {
         SchemaTypeSystem sts = XmlBeans.compileXsd(
                 new XmlObject[] { XmlObject.Factory.parse(new File(xsdFile)) }, XmlBeans.getBuiltinTypeSystem(), null);
 
@@ -87,76 +105,39 @@ public class Main {
         allSeenTypes.addAll(Arrays.asList(sts.documentTypes()));
         allSeenTypes.addAll(Arrays.asList(sts.attributeTypes()));
         allSeenTypes.addAll(Arrays.asList(sts.globalTypes()));
+
         for (int i = 0; i < allSeenTypes.size(); i++)
         {
             SchemaType sType = (SchemaType)allSeenTypes.get(i);
-            System.out.println("Visiting " + sType.toString());
 
             if(sType.getEnumerationValues() != null) {
                 for (int j = 0; j < sType.getEnumerationValues().length; j++) {
-                    String code = sType.getEnumerationValues()[j].getStringValue();
-//                    System.out.println(code);
+                    String value = sType.getEnumerationValues()[j].getStringValue();
 
                     PaymentRequestPayload p = new PaymentRequestPayload();
-                    p.setType(code);
+                    p.setValue(value);
 
                     if (! listContains(p)) {
-//                        System.out.println("The arraylist contains me");
-                        System.out.println(code + " is not in the arraylist ");
-
+                        String result = "Value: " + value + " of type: " + formatName(sType.getName().toString()) + " is not in the CSV file ";
+                        results.add(result);
                     }
                 }
             }
 
             for (int j = 0; j < sType.getProperties().length; j++) {
                 String name = sType.getProperties()[j].getName().toString();
-//                System.out.println("Property name: " + j + " " + name);
-//                System.out.println("Property type: " + sType.getProperties()[j].getType().getName());
 
                 PaymentRequestPayload p = new PaymentRequestPayload();
                 p.setTag(formatName(name));
 
                 if (! listContains(p)) {
-                    System.out.println("Property name: " + j + " " + name + " is not in the arraylist ");
-//                    System.out.println("Property type: " + sType.getProperties()[j].getType().getName());
-
-//                    System.out.println("The arraylist contains me");
+                    String result = "Property " + j + " name: " + name + " is not in the arraylist ";
+                    results.add(result);
                 }
-
             }
 
             allSeenTypes.addAll(Arrays.asList(sType.getAnonymousTypes()));
         }
-
-//        System.out.println(sts.getName());
-
-//        SchemaType [] globalTypes = sts.globalTypes();
-//
-//        for (int i = 0; i < globalTypes.length; i++) {
-//            SchemaType arr = globalTypes[i];
-//            System.out.println(arr.getName());
-////            System.out.println(arr.getProperties());
-//            for (int j = 0; j < arr.getProperties().length; j++) {
-//                System.out.println(arr.getProperties()[j].getName());
-//                System.out.println(arr.getProperties()[j].getType());
-//            }
-//        }
-//        System.out.println(sts.globalElements());
-//        for (int i = 0; i < sts.globalTypes().length; i++) {
-//            System.out.println("In for cycle");
-//            SchemaType globalType = sts.globalTypes();
-//            SchemaGlobalElement globalElement = sts.globalElements()[i];
-//            SchemaType type = globalElement.getType();
-//            System.out.println(globalElement.getName() + " = " + type.getName());
-//
-//            for (int j = 0; j < type.getProperties().length; j++) {
-//                System.out.println("in another for cycle");
-//                SchemaProperty property = type.getProperties()[j];
-//                System.out.println("\t" + property.getName() +
-//                        " [" + property.getMinOccurs() + ", " + property.getMaxOccurs() + "]" +
-//                        " = " + property.getType().getName());
-//            }
-//        }
     }
 
     private static String formatName(String name) {
@@ -170,15 +151,19 @@ public class Main {
 
     private static boolean listContains(PaymentRequestPayload p) {
         for (int i = 0; i < csvInfo.size(); i++) {
-            String tag = csvInfo.get(i).getTag();
+            PaymentRequestPayload q = csvInfo.get(i);
+            String tag = q.getTag();
+
             if(! tag.equals("")) {
-                if (tag.equals(p.getTag())) return true;
+                if (tag.equals(p.getTag())) {
+                    return true;
+                }
             } else {
-                if (csvInfo.get(i).getType().equals(p.getTag())) return true;
+                if (q.getValue().equals(p.getValue())) return true;
             }
         }
+
         return false;
     }
-
 
 }
