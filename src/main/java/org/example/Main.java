@@ -125,13 +125,18 @@ public class Main {
             }
 
             for (int j = 0; j < sType.getProperties().length; j++) {
-                String name = sType.getProperties()[j].getName().toString();
+                String name = formatName(sType.getProperties()[j].getName().toString());
 
                 PaymentRequestPayload p = new PaymentRequestPayload();
-                p.setTag(formatName(name));
+                p.setTag(name);
 
                 if (! listContains(p)) {
-                    String result = "Property " + j + " name: " + name + " is not in the arraylist ";
+                    String result = "";
+                    if (sType.getProperties()[j].getContainerType().getName() != null) {
+                        result = "Tag - " + name + " of complexType - " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the arraylist ";
+                    } else {
+                        result = "Tag - " + name + " does not have a container and is not in the arraylist ";
+                    }
                     results.add(result);
                 }
             }
@@ -143,10 +148,11 @@ public class Main {
     private static String formatName(String name) {
         for (int i = 0; i < name.length(); i++) {
             if(name.charAt(i) == '}') {
-                return "<" + name.substring(i+1) + ">";
+                name = name.substring(i+1);
+                break;
             }
         }
-        return name;
+        return "<" + name + ">";
     }
 
     private static boolean listContains(PaymentRequestPayload p) {
@@ -154,11 +160,12 @@ public class Main {
             PaymentRequestPayload q = csvInfo.get(i);
             String tag = q.getTag();
 
-            if(! tag.equals("")) {
+            if(! tag.equals("") && ! p.getTag().isEmpty() && p.getTag() != null && ! p.getTag().equals("")) {
                 if (tag.equals(p.getTag())) {
+//                    System.out.println(tag + " " + p.getTag());
                     return true;
                 }
-            } else {
+            } else if (tag.equals("") && ! p.getValue().isEmpty()){
                 if (q.getValue().equals(p.getValue())) return true;
             }
         }
