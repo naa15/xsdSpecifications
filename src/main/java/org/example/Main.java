@@ -12,10 +12,10 @@ public class Main {
     private static ArrayList<PaymentRequestPayload> csvInfo = new ArrayList<PaymentRequestPayload>();
     private static ArrayList<String> results = new ArrayList<String>();
     public static void main(String[] args) throws XmlException, IOException {
-        String filename = "Payment Request Payload.csv";
+        String filename = "new-Payment Request Payload.csv";
         readCSVfile(filename);
 
-        String xsdFile = "pain.001.001.11.xsd";
+        String xsdFile = "pain.001.001.09.xsd";
         readXSDFile(xsdFile);
 
         String outputFile = "output.txt";
