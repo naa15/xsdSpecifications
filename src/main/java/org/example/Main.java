@@ -94,7 +94,6 @@ public class Main {
             System.out.println("File name that was provided doesn't exist.");
             e.printStackTrace();
         }
-
     }
 
     private static void readXSDFile(String xsdFile) throws XmlException, IOException {
@@ -118,26 +117,28 @@ public class Main {
                     p.setValue(value);
 
                     if (! listContains(p)) {
-                        String result = "Value: " + value + " of type: " + formatName(sType.getName().toString()) + " is not in the CSV file ";
+                        String result = "Enum value " + value + " of type " + formatName(sType.getName().toString()) + " is not in the CSV file ";
                         results.add(result);
                     }
                 }
             }
 
-            for (int j = 0; j < sType.getProperties().length; j++) {
-                String name = formatName(sType.getProperties()[j].getName().toString());
+            if(sType.getProperties() != null) {
+                for (int j = 0; j < sType.getProperties().length; j++) {
+                    String name = formatName(sType.getProperties()[j].getName().toString());
 
-                PaymentRequestPayload p = new PaymentRequestPayload();
-                p.setTag(name);
+                    PaymentRequestPayload p = new PaymentRequestPayload();
+                    p.setTag(name);
 
-                if (! listContains(p)) {
-                    String result = "";
-                    if (sType.getProperties()[j].getContainerType().getName() != null) {
-                        result = "Tag - " + name + " of complexType - " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the arraylist ";
-                    } else {
-                        result = "Tag - " + name + " does not have a container and is not in the arraylist ";
+                    if (!listContains(p)) {
+                        String result = "";
+                        if (sType.getProperties()[j].getContainerType().getName() != null) {
+                            result = "Tag " + name + " of complexType " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the CSV file ";
+                        } else {
+                            result = "Tag " + name + " does not have a container and is not in the CSV file ";
+                        }
+                        results.add(result);
                     }
-                    results.add(result);
                 }
             }
 
@@ -148,7 +149,7 @@ public class Main {
     private static String formatName(String name) {
         for (int i = 0; i < name.length(); i++) {
             if(name.charAt(i) == '}') {
-                name = name.substring(i+1);
+                name = name.substring(i + 1);
                 break;
             }
         }
@@ -160,16 +161,12 @@ public class Main {
             PaymentRequestPayload q = csvInfo.get(i);
             String tag = q.getTag();
 
-            if(! tag.equals("") && ! p.getTag().isEmpty() && p.getTag() != null && ! p.getTag().equals("")) {
-                if (tag.equals(p.getTag())) {
-//                    System.out.println(tag + " " + p.getTag());
-                    return true;
-                }
+            if(! tag.equals("") && ! p.getTag().isEmpty() && p.getTag() != null) {
+                if (tag.equals(p.getTag())) return true;
             } else if (tag.equals("") && ! p.getValue().isEmpty()){
                 if (q.getValue().equals(p.getValue())) return true;
             }
         }
-
         return false;
     }
 
