@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.ArrayList;
+
 public class PaymentRequestPayload implements Comparable<PaymentRequestPayload>  {
     private int lvl;
     private String name;
@@ -19,7 +21,8 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     private String maxLength;
     private String minLength;
     private String regex;
-
+    private PaymentRequestPayload parent;
+    private ArrayList<PaymentRequestPayload> children = new ArrayList<PaymentRequestPayload>();
     public PaymentRequestPayload() {
 
     }
@@ -162,6 +165,22 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
 
     public String getRegex() {
         return regex;
+    }
+
+    public PaymentRequestPayload getParent() {
+        return parent;
+    }
+
+    public void setParent(PaymentRequestPayload parent) {
+        this.parent = parent;
+    }
+
+    public ArrayList<PaymentRequestPayload> getChildren() {
+        return children;
+    }
+
+    public void addChild(PaymentRequestPayload child) {
+        children.add(child);
     }
     @Override
     public String toString() {
