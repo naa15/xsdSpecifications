@@ -47,6 +47,14 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     }
 
     public void setType(String type) {
+        for (int i = 0; i < type.length(); i++) {
+            String str = "" + type.charAt(i);
+            if (str.equals("\n") || str.equals("\r\n") || str.equals("\r")) {
+                type = type.substring(0, i) + type.substring(i+1);
+                i--;
+            }
+        }
+
         this.type = type;
 
         if(isDate()) {
@@ -54,6 +62,9 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
         }
         if(isTextWithLength()) {
             formatTextType(type);
+        }
+        if (isChoice()) {
+            this.type = "";
         }
     }
 
@@ -184,17 +195,18 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     }
     @Override
     public String toString() {
-        return "PaymentRequestPayload{" +
+        return "PRP{" +
                 "lvl=" + lvl +
                 ", name='" + name + '\'' +
                 ", tag='" + tag + '\'' +
                 ", occur='" + occur + '\'' +
                 ", type='" + type + '\'' +
+                ", regex='" + regex +'\'' +
                 ", value='" + value + '\'' +
-                ", validationRule='" + validationRule + '\'' +
+//                ", validationRule='" + validationRule + '\'' +
                 ", path='" + path + '\'' +
-                ", definition='" + definition + '\'' +
-                ", fieldDefinition='" + fieldDefinition + '\'' +
+//                ", definition='" + definition + '\'' +
+//                ", fieldDefinition='" + fieldDefinition + '\'' +
                 ", minOccurance='" + minOccurs + '\'' +
                 ", maxOccurance='" + maxOccurs + '\'' +
                 '}';
@@ -217,7 +229,7 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
 
         char ch = s.charAt(4);
         if(ch == '*') {
-            maxOccurs = Integer.MAX_VALUE;
+            maxOccurs = 62;
         } else {
             maxOccurs = s.charAt(4) - '0';
         }
@@ -225,22 +237,20 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
 
     public void formatDate(String type) {
         if(type.equals("dateTime")) {
-            dateTime = "ISODateTime";
+            this.type = "ISODateTime";
         } else {
-            date = "ISODate";
+            this.type = "ISODate";
         }
     }
 
     private void formatTextType(String type) {
         String mx = "";
-        String mn = "";
 
         for (int i = 0; i < type.length(); i++) {
             if (type.charAt(i) == '{') {
                 i++;
                 while(type.charAt(i) != '}') {
                     if(type.charAt(i) == ',') {
-                        mn = mx;
                         mx = "";
                     } else {
                         mx += type.charAt(i);
@@ -251,8 +261,13 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
             }
         }
         maxLength = "Max" + mx + "Text";
-        minLength = "Min" + mn + "Text";
         regex = type.substring(5,type.length()-1);
+
+        if(mx.length() > 1) {
+            this.type = maxLength;
+        } else {
+            this.type = regex;
+        }
     }
 
     @Override

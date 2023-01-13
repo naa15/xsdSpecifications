@@ -13,17 +13,20 @@ public class Main {
     private static ArrayList<PaymentRequestPayload> treeFromCSV = new ArrayList<PaymentRequestPayload>();
     private static ArrayList<PaymentRequestPayload> treeFromXSD = new ArrayList<PaymentRequestPayload>();
     public static void main(String[] args) throws XmlException, IOException {
-//        String filename = "new-Payment Request Payload.csv";
-//        readCSVfile(filename);
-//
-//        buildTree();
-//
-//        String xsdFile = "pain.001.001.09.xsd";
-//        processXSDFile(xsdFile);
+        String filename = "new-Payment Request Payload.csv";
+        readCSVfile(filename);
 
+        buildTree();
+//        printTree(treeFromCSV, "");
+
+        String xsdFile = "pain.001.001.09.xsd";
+        processXSDFile(xsdFile);
+
+//        printTree(treeFromXSD, "");
 //        printTree(treeFromCSV, "");
 //        readXSDFile(xsdFile);
 
+//        compareTrees(treeFromCSV.get(0), treeFromXSD.get(0));
 //        String outputFile = "output.txt";
 //        writeInFile(outputFile);
     }
@@ -171,23 +174,12 @@ public class Main {
     }
 
     public static void buildTree () {
-//        int depth = getDepth();
+        int depth = getDepth();
+        ArrayList<Integer> indexes = new ArrayList<Integer>(depth+1);
+        for (int i = 0; i < depth + 1; i++) {
+            indexes.add(0);
+        }
         int currLevel = -1;
-        PaymentRequestPayload latest1Deep = null;
-        PaymentRequestPayload latest2Deep = null;
-        PaymentRequestPayload latest3Deep = null;
-        PaymentRequestPayload latest4Deep = null;
-        PaymentRequestPayload latest5Deep = null;
-        PaymentRequestPayload latest6Deep = null;
-        PaymentRequestPayload latest7Deep = null;
-        PaymentRequestPayload latest8Deep = null;
-        PaymentRequestPayload latest9Deep = null;
-        PaymentRequestPayload latest10Deep = null;
-        PaymentRequestPayload latest11Deep = null;
-        PaymentRequestPayload latest12Deep = null;
-        PaymentRequestPayload latest13Deep = null;
-        PaymentRequestPayload latest14Deep = null;
-        PaymentRequestPayload latest15Deep = null;
 
         for (int i = 0; i < csvInfo.size(); i++) {
             PaymentRequestPayload current = csvInfo.get(i);
@@ -198,75 +190,23 @@ public class Main {
             } else if (currLevel == 1) {
                 treeFromCSV.get(treeFromCSV.size() - 1).addChild(current);
                 current.setParent(treeFromCSV.get(treeFromCSV.size() - 1));
-                latest1Deep = current;
-             } else if (currLevel == 2) {
-                latest1Deep.addChild(current);
-                current.setParent(latest1Deep);
-                latest2Deep = current;
-            } else if (currLevel == 3) {
-                latest2Deep.addChild(current);
-                current.setParent(latest2Deep);
-                latest3Deep = current;
-            } else if (currLevel == 4) {
-                latest3Deep.addChild(current);
-                current.setParent(latest3Deep);
-                latest4Deep = current;
-            } else if (currLevel == 5) {
-                latest4Deep.addChild(current);
-                current.setParent(latest4Deep);
-                latest5Deep = current;
-            } else if (currLevel == 6) {
-                latest5Deep.addChild(current);
-                current.setParent(latest5Deep);
-                latest6Deep = current;
-            } else if (currLevel == 7) {
-                latest6Deep.addChild(current);
-                current.setParent(latest6Deep);
-                latest7Deep = current;
-            } else if (currLevel == 8) {
-                latest7Deep.addChild(current);
-                current.setParent(latest7Deep);
-                latest8Deep = current;
-            } else if (currLevel == 9) {
-                latest8Deep.addChild(current);
-                current.setParent(latest8Deep);
-                latest9Deep = current;
-            } else if (currLevel == 10) {
-                latest9Deep.addChild(current);
-                current.setParent(latest9Deep);
-                latest10Deep = current;
-            } else if (currLevel == 11) {
-                latest10Deep.addChild(current);
-                current.setParent(latest10Deep);
-                latest11Deep = current;
-            } else if (currLevel == 12) {
-                latest11Deep.addChild(current);
-                current.setParent(latest11Deep);
-                latest12Deep = current;
-            } else if (currLevel == 13) {
-                latest12Deep.addChild(current);
-                current.setParent(latest12Deep);
-                latest13Deep = current;
-            } else if (currLevel == 14) {
-                latest13Deep.addChild(current);
-                current.setParent(latest13Deep);
-                latest14Deep = current;
-            } else if (currLevel == 15) {
-                latest14Deep.addChild(current);
-                current.setParent(latest14Deep);
+                indexes.set(1, i);
+             } else {
+                csvInfo.get(indexes.get(currLevel-1)).addChild(current);
+                current.setParent(csvInfo.get(indexes.get(currLevel-1)));
+                indexes.set(currLevel, i);
             }
         }
     }
 
-
-
     public static void printTree(ArrayList<PaymentRequestPayload> arr, String tab) {
         for (int i = 0; i < arr.size(); i++) {
-            if (! arr.get(i).getTag().equals("") && ! arr.get(i).getTag().isEmpty() && arr.get(i).getTag() != null) {
-                System.out.println(tab + arr.get(i).getTag());
-            } else {
-                System.out.println(tab + arr.get(i).getValue());
-            }
+//            if (! arr.get(i).getTag().equals("") && ! arr.get(i).getTag().isEmpty() && arr.get(i).getTag() != null) {
+//                System.out.println(tab + arr.get(i).getTag());
+//            } else {
+//                System.out.println(tab + arr.get(i).getValue());
+//            }
+            System.out.println(tab + arr.get(i).getTag() + " " + arr.get(i).getType() + " " + arr.get(i).getOccur());
             printTree(arr.get(i).getChildren(), tab + "\t");
         }
     }
@@ -298,7 +238,9 @@ public class Main {
             p.setTag('<' + globalElement.getName().getLocalPart() + '>');
             p.setParent(null);
             p.setLvl(-1);
-
+            if (type.isSimpleType()) {
+                p.setType(type.getName().getLocalPart());
+            }
             treeFromXSD.add(p);
 
             processType(type, 0, p);
@@ -326,6 +268,24 @@ public class Main {
             p.setTag('<' + property.getName().getLocalPart() + '>');
             p.setParent(parent);
             p.setLvl(level);
+
+            if(property.getType().isSimpleType()) {
+                SchemaType stype = property.getType();
+
+//                System.out.println(stype.getName().getLocalPart());
+                String baseType = stype.getPrimitiveType().getName().getLocalPart();
+
+//                System.out.println(baseType);
+                if (stype.getPatterns().length > 0) {
+                    String primitiveType = stype.getPatterns()[0];
+                    p.setType(primitiveType);
+                } else if (baseType.equals("boolean")) {
+                    p.setType(baseType);
+                } else {
+                    p.setType(stype.getName().getLocalPart());
+//                    System.out.println(stype.getName().getLocalPart());
+                }
+            }
             p.setOccur("[" + property.getMinOccurs() + ", " + property.getMaxOccurs() + "]" );
 
             parent.addChild(p);
@@ -333,15 +293,32 @@ public class Main {
         }
     }
 
+    private static boolean compareNodes (PaymentRequestPayload p, PaymentRequestPayload q) {
+//        if (p.getTag().equals(q.getTag()) && p.getValue().equals(q.getValue()) && p.getType().equals(q.getType())) return true;
+        if (p.getTag().equals(q.getTag()) && p.getMaxOccurs() == q.getMaxOccurs() && p.getMinOccurs() == q.getMinOccurs()
+            && p.getValue().equals(q.getValue())) return true;
+        System.out.println("csv: " + p);
+        System.out.println("xsd: " + q);
+        System.out.println("Error");
+        return false;
+    }
     private static void compareChildren (PaymentRequestPayload p, PaymentRequestPayload q) {
+        if (p == null || q == null) return;
+
         ArrayList<PaymentRequestPayload> childrenP = p.getChildren();
         ArrayList<PaymentRequestPayload> childrenQ = q.getChildren();
 
-        //TO DO
+        if (childrenP.size() == childrenQ.size()) {
+            for (int i = 0; i < childrenQ.size(); i++) {
+                compareTrees(childrenP.get(i), childrenQ.get(i));
+            }
+        } else {
+
+        }
     }
     private static void compareTrees(PaymentRequestPayload p, PaymentRequestPayload q) {
-        // TO DO
         if (p.getTag().equals(q.getTag())) {
+            compareNodes(p,q);
             compareChildren(p, q);
         } else {
             System.out.println("Element" + q.getTag() + " is not in the CSV file ");
