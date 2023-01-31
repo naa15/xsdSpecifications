@@ -1,4 +1,4 @@
-package org.example;
+package com.gevamu.csvParserConverter;
 
 import java.util.ArrayList;
 
