@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 
-public class PaymentRequestPayload implements Comparable<PaymentRequestPayload>  {
+public class CustomType implements Comparable<CustomType>  {
     private int lvl;
     private String name;
     private String tag="";
@@ -13,17 +13,16 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     private String path;
     private String definition;
     private String fieldDefinition;
-    private int minOccurs = 0;
-    private int maxOccurs = 0;
     private String date;
     private String dateTime;
     private String choiceType;
     private String maxLength;
     private String minLength;
     private String regex;
-    private PaymentRequestPayload parent;
-    private ArrayList<PaymentRequestPayload> children = new ArrayList<PaymentRequestPayload>();
-    public PaymentRequestPayload() {
+    private CustomType parent;
+    private boolean isChecked = false;
+    private ArrayList<CustomType> children = new ArrayList<CustomType>();
+    public CustomType() {
 
     }
 
@@ -41,9 +40,24 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     }
 
     public void setOccur(String occur) {
-        this.occur = occur;
+        if(occur.length() < 5) {
+            this.occur = occur;
+            return;
+        }
 
-        formatOccurs(occur);
+        int minOccurs = 0;
+        int maxOccurs = 0;
+
+        minOccurs = occur.charAt(1) - '0';
+
+        char ch = occur.charAt(4);
+        if(ch == '*') {
+            maxOccurs = 62;
+        } else {
+            maxOccurs = occur.charAt(4) - '0';
+        }
+
+        this.occur = "[" + minOccurs + ", " + maxOccurs + "]";
     }
 
     public void setType(String type) {
@@ -150,13 +164,13 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
         return fieldDefinition;
     }
 
-    public int getMinOccurs() {
-        return minOccurs;
-    }
-
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
+//    public int getMinOccurs() {
+//        return minOccurs;
+//    }
+//
+//    public int getMaxOccurs() {
+//        return maxOccurs;
+//    }
 
     public String getDate() {
         return date;
@@ -178,24 +192,31 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
         return regex;
     }
 
-    public PaymentRequestPayload getParent() {
+    public CustomType getParent() {
         return parent;
     }
 
-    public void setParent(PaymentRequestPayload parent) {
+    public void setParent(CustomType parent) {
         this.parent = parent;
     }
 
-    public ArrayList<PaymentRequestPayload> getChildren() {
+    public boolean isChecked () {
+        return this.isChecked;
+    }
+
+    public void setChecked (boolean checked) {
+        isChecked = checked;
+    }
+    public ArrayList<CustomType> getChildren() {
         return children;
     }
 
-    public void addChild(PaymentRequestPayload child) {
+    public void addChild(CustomType child) {
         children.add(child);
     }
     @Override
     public String toString() {
-        return "PRP{" +
+        return "{" +
                 "lvl=" + lvl +
                 ", name='" + name + '\'' +
                 ", tag='" + tag + '\'' +
@@ -204,11 +225,12 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
                 ", regex='" + regex +'\'' +
                 ", value='" + value + '\'' +
 //                ", validationRule='" + validationRule + '\'' +
-                ", path='" + path + '\'' +
+//                ", path='" + path + '\'' +
 //                ", definition='" + definition + '\'' +
 //                ", fieldDefinition='" + fieldDefinition + '\'' +
-                ", minOccurance='" + minOccurs + '\'' +
-                ", maxOccurance='" + maxOccurs + '\'' +
+//                ", minOccurance='" + minOccurs + '\'' +
+//                ", maxOccurance='" + maxOccurs + '\'' +
+                ", parent='" + parent.getTag() + '\'' +
                 '}';
     }
 
@@ -221,18 +243,6 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
             }
         }
         return str.substring(index);
-    }
-
-    public void formatOccurs(String s) {
-        if(s.length() < 5) return;
-        minOccurs = s.charAt(1) - '0';
-
-        char ch = s.charAt(4);
-        if(ch == '*') {
-            maxOccurs = 62;
-        } else {
-            maxOccurs = s.charAt(4) - '0';
-        }
     }
 
     public void formatDate(String type) {
@@ -271,7 +281,7 @@ public class PaymentRequestPayload implements Comparable<PaymentRequestPayload> 
     }
 
     @Override
-    public int compareTo(PaymentRequestPayload o) {
+    public int compareTo(CustomType o) {
         if(tag == o.tag ) return 0;
         if (lvl >= o.lvl) return 1;
         return -1;
