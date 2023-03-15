@@ -21,7 +21,7 @@ public class CustomType implements Comparable<CustomType>  {
     private String regex;
     private CustomType parent;
     private boolean isChecked = false;
-    private ArrayList<CustomType> children = new ArrayList<CustomType>();
+    private ArrayList<CustomType> children = new ArrayList<>();
     public CustomType() {
 
     }
@@ -45,8 +45,8 @@ public class CustomType implements Comparable<CustomType>  {
             return;
         }
 
-        int minOccurs = 0;
-        int maxOccurs = 0;
+        int minOccurs;
+        int maxOccurs;
 
         minOccurs = occur.charAt(1) - '0';
 
@@ -80,28 +80,31 @@ public class CustomType implements Comparable<CustomType>  {
         if (isChoice()) {
             this.type = "";
         }
+        if(isDecimal()) {
+            this.type = "DecimalNumber";
+        }
     }
 
     public boolean isDecimal() {
-        return type.length() >= 13 && (type.substring(1,13).equals("0 <= decimal") || type.substring(1,8).equals("decimal"));
+        return type.length() >= 13 && (type.startsWith("0 <= decimal", 1) || type.startsWith("decimal", 1));
     }
 
     public boolean isBoolean() {
         return type.length()>=7 && type.equals("boolean");
     }
     public boolean isText() {
-        return type.length() >= 4 && type.substring(0,4).equals("text");
+        return type.length() >= 4 && type.startsWith("text");
     }
 
     public boolean isTextWithLength() {
-        return type.length() >= 5 && type.substring(1,5).equals("text");
+        return type.length() >= 5 && type.startsWith("text", 1);
     }
     public boolean isChoice() {
-        return type.length() >= 6 && type.substring(0,6).equals("Choice");
+        return type.length() >= 6 && type.startsWith("Choice");
     }
 
     public boolean isDate() {
-        return type.length() >= 4 && type.substring(0,4).equals("date");
+        return type.length() >= 4 && type.startsWith("date");
     }
 
     public void setValue(String value) {
@@ -228,8 +231,8 @@ public class CustomType implements Comparable<CustomType>  {
 //                ", path='" + path + '\'' +
 //                ", definition='" + definition + '\'' +
 //                ", fieldDefinition='" + fieldDefinition + '\'' +
-//                ", minOccurance='" + minOccurs + '\'' +
-//                ", maxOccurance='" + maxOccurs + '\'' +
+//                ", minOccurrence='" + minOccurs + '\'' +
+//                ", maxOccurrence='" + maxOccurs + '\'' +
                 ", parent='" + parent.getTag() + '\'' +
                 '}';
     }
@@ -254,16 +257,16 @@ public class CustomType implements Comparable<CustomType>  {
     }
 
     private void formatTextType(String type) {
-        String mx = "";
+        StringBuilder mx = new StringBuilder();
 
         for (int i = 0; i < type.length(); i++) {
             if (type.charAt(i) == '{') {
                 i++;
                 while(type.charAt(i) != '}') {
                     if(type.charAt(i) == ',') {
-                        mx = "";
+                        mx = new StringBuilder();
                     } else {
-                        mx += type.charAt(i);
+                        mx.append(type.charAt(i));
                     }
                     i++;
                 }
@@ -273,16 +276,21 @@ public class CustomType implements Comparable<CustomType>  {
         maxLength = "Max" + mx + "Text";
         regex = type.substring(5,type.length()-1);
 
-        if(mx.length() > 1) {
-            this.type = maxLength;
-        } else {
+        if (regex.length() > 8) {
             this.type = regex;
+        } else {
+            this.type = maxLength;
         }
+//        if(mx.length() > 1) {
+//            this.type = maxLength;
+//        } else {
+//            this.type = regex;
+//        }
     }
 
     @Override
     public int compareTo(CustomType o) {
-        if(tag == o.tag ) return 0;
+        if(tag.equals(o.tag)) return 0;
         if (lvl >= o.lvl) return 1;
         return -1;
     }

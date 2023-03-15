@@ -7,28 +7,22 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class Main {
 
-    private static ArrayList<CustomType> csvInfo = new ArrayList<CustomType>();
+    private static final ArrayList<CustomType> csvInfo = new ArrayList<>();
 
-    private static ArrayList<String> results = new ArrayList<String>();
-    private static ArrayList<CustomType> treeFromCSV = new ArrayList<CustomType>();
-    private static ArrayList<CustomType> treeFromXSD = new ArrayList<CustomType>();
+    private static final ArrayList<String> results = new ArrayList<>();
+    private static final ArrayList<CustomType> treeFromCSV = new ArrayList<>();
+    private static final ArrayList<CustomType> treeFromXSD = new ArrayList<>();
     public static void main(String[] args) throws XmlException, IOException {
         String filename = "new-Payment Request Payload.csv";
         readCSVfile(filename);
-
         buildTree();
-//        printTree(treeFromCSV, "");
 
         String xsdFile = "pain.001.001.09.xsd";
         processXSDFile(xsdFile);
-
-//        printTree(treeFromXSD, "");
-//        printTree(treeFromCSV, "");
-//        readXSDFile(xsdFile);
-
         compareTrees(treeFromCSV.get(0), treeFromXSD.get(0));
-//        String outputFile = "output.txt";
-//        writeInFile(outputFile);
+
+        String outputFile = "output.txt";
+        writeInFile(outputFile);
     }
 
     private static void writeInFile(String outputFile) {
@@ -41,8 +35,8 @@ public class Main {
             }
             try {
                 FileWriter myWriter = new FileWriter(outputFile);
-                for (int i = 0; i < results.size(); i++) {
-                    myWriter.write(results.get(i));
+                for (String result : results) {
+                    myWriter.write(result);
                     myWriter.write('\n');
                 }
                 myWriter.close();
@@ -65,7 +59,7 @@ public class Main {
             while (myReader.hasNext()) {
                 CustomType p = new CustomType();
                 String lvl = myReader.next();
-                p.setLvl(Integer.valueOf(lvl));
+                p.setLvl(Integer.parseInt(lvl));
                 p.setName(myReader.next());
                 p.setTag(myReader.next());
                 p.setOccur(myReader.next());
@@ -105,55 +99,59 @@ public class Main {
         }
     }
 
-//    private static void readXSDFile(String xsdFile) throws XmlException, IOException {
-//        SchemaTypeSystem sts = XmlBeans.compileXsd(
-//                new XmlObject[] { XmlObject.Factory.parse(new File(xsdFile)) }, XmlBeans.getBuiltinTypeSystem(), null);
-//
-//        List allSeenTypes = new ArrayList();
-//        allSeenTypes.addAll(Arrays.asList(sts.documentTypes()));
-//        allSeenTypes.addAll(Arrays.asList(sts.attributeTypes()));
-//        allSeenTypes.addAll(Arrays.asList(sts.globalTypes()));
-//
-//        for (int i = 0; i < allSeenTypes.size(); i++)
-//        {
-//            SchemaType sType = (SchemaType) allSeenTypes.get(i);
-//
-//            if(sType.getEnumerationValues() != null) {
-//                for (int j = 0; j < sType.getEnumerationValues().length; j++) {
-//                    String value = sType.getEnumerationValues()[j].getStringValue();
-//
-//                    PaymentRequestPayload p = new PaymentRequestPayload();
-//                    p.setValue(value);
-//
-//                    if (! listContains(p)) {
-//                        String result = "Enum value " + value + " of type " + formatName(sType.getName().toString()) + " is not in the CSV file ";
-//                        results.add(result);
-//                    }
-//                }
-//            }
-//
-//            if(sType.getProperties() != null) {
-//                for (int j = 0; j < sType.getProperties().length; j++) {
-//                    String name = formatName(sType.getProperties()[j].getName().toString());
-//
-//                    PaymentRequestPayload p = new PaymentRequestPayload();
-//                    p.setTag(name);
-//
-//                    if (!listContains(p)) {
-//                        String result = "";
-//                        if (sType.getProperties()[j].getContainerType().getName() != null) {
-//                            result = "Tag " + name + " of complexType " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the CSV file ";
-//                        } else {
-//                            result = "Tag " + name + " is not in the CSV file ";
-//                        }
-//                        results.add(result);
-//                    }
-//                }
-//            }
-//
-//            allSeenTypes.addAll(Arrays.asList(sType.getAnonymousTypes()));
-//        }
-//    }
+
+    /**
+     * First solution without building a tree
+     *
+    private static void readXSDFile(String xsdFile) throws XmlException, IOException {
+        SchemaTypeSystem sts = XmlBeans.compileXsd(
+                new XmlObject[] { XmlObject.Factory.parse(new File(xsdFile)) }, XmlBeans.getBuiltinTypeSystem(), null);
+
+        List allSeenTypes = new ArrayList();
+        allSeenTypes.addAll(Arrays.asList(sts.documentTypes()));
+        allSeenTypes.addAll(Arrays.asList(sts.attributeTypes()));
+        allSeenTypes.addAll(Arrays.asList(sts.globalTypes()));
+
+        for (int i = 0; i < allSeenTypes.size(); i++)
+        {
+            SchemaType sType = (SchemaType) allSeenTypes.get(i);
+
+            if(sType.getEnumerationValues() != null) {
+                for (int j = 0; j < sType.getEnumerationValues().length; j++) {
+                    String value = sType.getEnumerationValues()[j].getStringValue();
+
+                    PaymentRequestPayload p = new PaymentRequestPayload();
+                    p.setValue(value);
+
+                    if (! listContains(p)) {
+                        String result = "Enum value " + value + " of type " + formatName(sType.getName().toString()) + " is not in the CSV file ";
+                        results.add(result);
+                    }
+                }
+            }
+
+            if(sType.getProperties() != null) {
+                for (int j = 0; j < sType.getProperties().length; j++) {
+                    String name = formatName(sType.getProperties()[j].getName().toString());
+
+                    PaymentRequestPayload p = new PaymentRequestPayload();
+                    p.setTag(name);
+
+                    if (!listContains(p)) {
+                        String result = "";
+                        if (sType.getProperties()[j].getContainerType().getName() != null) {
+                            result = "Tag " + name + " of complexType " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the CSV file ";
+                        } else {
+                            result = "Tag " + name + " is not in the CSV file ";
+                        }
+                        results.add(result);
+                    }
+                }
+            }
+
+            allSeenTypes.addAll(Arrays.asList(sType.getAnonymousTypes()));
+        }
+    }
 
     private static String formatName(String name) {
         return "<" + name + ">";
@@ -172,14 +170,15 @@ public class Main {
         }
         return false;
     }
+     **/
 
     public static void buildTree () {
         int depth = getDepth();
-        ArrayList<Integer> indexes = new ArrayList<Integer>(depth+1);
+        ArrayList<Integer> indexes = new ArrayList<>(depth+1);
         for (int i = 0; i < depth + 1; i++) {
             indexes.add(0);
         }
-        int currLevel = -1;
+        int currLevel;
 
         for (int i = 0; i < csvInfo.size(); i++) {
             CustomType current = csvInfo.get(i);
@@ -199,22 +198,25 @@ public class Main {
         }
     }
 
+    /**
+     * Printing tree for testing purposes
+     *
     public static void printTree(ArrayList<CustomType> arr, String tab) {
-        for (int i = 0; i < arr.size(); i++) {
-            if (! arr.get(i).getTag().equals("") && ! arr.get(i).getTag().isEmpty() && arr.get(i).getTag() != null) {
-                System.out.println(tab + arr.get(i).getTag() + " " + arr.get(i).getType() + " " + arr.get(i).getOccur());
+        for (CustomType customType : arr) {
+            if (!customType.getTag().equals("") && !customType.getTag().isEmpty() && customType.getTag() != null) {
+                System.out.println(tab + customType.getTag() + " " + customType.getType() + " " + customType.getOccur());
             } else {
-                System.out.println(tab + arr.get(i).getValue() + " " + arr.get(i).getType() + " " + arr.get(i).getOccur());
+                System.out.println(tab + customType.getValue() + " " + customType.getType() + " " + customType.getOccur());
             }
-//            System.out.println(tab + arr.get(i).getTag() + " " + arr.get(i).getType() + " " + arr.get(i).getOccur());
-            printTree(arr.get(i).getChildren(), tab + "\t");
+            printTree(customType.getChildren(), tab + "\t");
         }
     }
+     **/
     public static int getDepth () {
         int max = -1;
-        int curLevel = -1;
-        for (int i = 0; i < csvInfo.size(); i++) {
-            curLevel = csvInfo.get(i).getLvl();
+        int curLevel;
+        for (CustomType customType : csvInfo) {
+            curLevel = customType.getLvl();
             if (curLevel > max) {
                 max = curLevel;
             }
@@ -275,44 +277,65 @@ public class Main {
 
             if(property.getType().isSimpleType()) {
                 SchemaType stype = property.getType();
-
-//                System.out.println(stype.getName().getLocalPart());
                 String baseType = stype.getPrimitiveType().getName().getLocalPart();
-
-//                System.out.println(baseType);
                 if (stype.getPatterns().length > 0) {
                     String primitiveType = stype.getPatterns()[0];
                     p.setType(primitiveType);
                 } else if (baseType.equals("boolean")) {
                     p.setType(baseType);
+                } else if (baseType.equals("decimal")) {
+                    p.setType("DecimalNumber");
+                } else if (stype.getName().getLocalPart().endsWith("Code")) {
+                    if (stype.getEnumerationValues() != null) {
+                        p.setType("text");
+                    } else {
+                        p.setType(" text{" + stype.getFacet(1).getStringValue() + "," + stype.getFacet(2).getStringValue() + "}");
+                    }
                 } else {
                     p.setType(stype.getName().getLocalPart());
-//                    System.out.println(stype.getName().getLocalPart());
                 }
             }
             p.setOccur("[" + property.getMinOccurs() + ", " + property.getMaxOccurs() + "]" );
 
             parent.addChild(p);
+
+            if (p.getType().isEmpty()) {
+                if (property.getType().getBaseType() != null) {
+                    if (property.getType().getBaseType().getBaseType() != null) {
+                        if(! property.getType().getBaseType().getBaseType().getName().getLocalPart().isEmpty()) {
+                            String basetype = property.getType().getBaseType().getBaseType().getName().getLocalPart();
+                            if (basetype.equals("decimal")) {
+                                p.setType("DecimalNumber");
+                            } else {
+                                p.setType(basetype);
+                            }
+                        }
+                    } else {
+                        p.setType("object");
+                    }
+                }
+            }
             processType(property.getType(), level + 1, p);
         }
     }
 
-    private static boolean compareNodes (CustomType p, CustomType q) {
+    private static void compareNodes (CustomType p, CustomType q) {
         if (! p.getTag().equals(q.getTag())) {
-            System.out.println(q.getPath() + " tags are different " + p.getTag() + " " + q.getTag());
+            results.add(q.getPath() + " tags are different. In csv file: " + p.getTag() + " in XSD file " + q.getTag());
         }
         if (! p.getOccur().equals(q.getOccur())) {
-            System.out.println(q.getPath() + " occurances are different " + p.getTag() + ": " + p.getOccur() + " " + q.getTag() + ": " + q.getOccur());
+            results.add(q.getPath() + " " + p.getTag() + " occurrences are different, in CSV file: " + p.getOccur() + " in XSD document: " + q.getOccur());
         }
         if (! p.getValue().equals(q.getValue())) {
-           System.out.println(q.getPath() + " values are different " + p.getTag() + ": " + p.getValue() + " " + q.getTag() + ": " + q.getValue());
+            results.add(q.getPath() + " " + p.getTag() + " values are different, in CSV file: " + p.getValue() + " in XSD document: " + q.getValue());
         }
         if (! p.getType().equals(q.getType())) {
-            System.out.println(q.getPath() + " types are different " + p.getTag() + ": " + p.getType() + " " + q.getTag() + ": " + q.getType());
+            String csvType = p.getType();
+            String xsdType = q.getType();
+            if (! csvType.isEmpty()) {
+                results.add(q.getPath() + " " + p.getTag() + " types are different, in CSV file: " + csvType + " in XSD file: " + xsdType);
+            }
         }
-        if (p.getTag().equals(q.getTag()) && p.getOccur().equals(q.getOccur()) && p.getType().equals(q.getType())
-            && p.getValue().equals(q.getValue())) return true;
-       return false;
     }
     private static void compareChildren (CustomType p, CustomType q) {
         if (p == null || q == null) return;
@@ -320,11 +343,9 @@ public class Main {
         ArrayList<CustomType> childrenP = p.getChildren();
         ArrayList<CustomType> childrenQ = q.getChildren();
 
-        for (int i = 0; i < childrenQ.size(); i++) {
-            CustomType currentXSD = childrenQ.get(i);
-            for (int j = 0; j < childrenP.size(); j++) {
-                CustomType currentCSV = childrenP.get(j);
-                if (! currentCSV.isChecked()) {
+        for (CustomType currentXSD : childrenQ) {
+            for (CustomType currentCSV : childrenP) {
+                if (!currentCSV.isChecked()) {
                     if (currentXSD.getTag().equals("") || currentXSD.getTag().isEmpty()) {
                         if (currentXSD.getValue().equals(currentCSV.getValue())) {
                             currentCSV.setChecked(true);
@@ -332,15 +353,15 @@ public class Main {
                             compareNodes(currentCSV, currentXSD);
                         }
                     } else if (currentXSD.getTag().equals(currentCSV.getTag())) {
-                            currentCSV.setChecked(true);
-                            currentXSD.setChecked(true);
-                            compareNodes(currentCSV, currentXSD);
-                            compareChildren(currentCSV, currentXSD);
+                        currentCSV.setChecked(true);
+                        currentXSD.setChecked(true);
+                        compareNodes(currentCSV, currentXSD);
+                        compareChildren(currentCSV, currentXSD);
                     }
                 }
             }
-            if(! currentXSD.isChecked()) {
-                System.out.println(currentXSD.getPath() + " In CSV file object " + p.getTag() + " doesn't have child " + currentXSD.getTag());
+            if (!currentXSD.isChecked()) {
+                results.add(currentXSD.getPath() + " In CSV file object " + p.getTag() + " doesn't have child " + currentXSD.getTag());
             }
         }
     }
@@ -349,9 +370,8 @@ public class Main {
             compareNodes(p,q);
             compareChildren(p, q);
         } else {
-            System.out.println("Element" + q.getTag() + " is not in the CSV file ");
+            results.add("Element" + q.getTag() + " is not in the CSV file ");
             compareTrees(p, q.getChildren().get(0));
         }
     }
-
 }
