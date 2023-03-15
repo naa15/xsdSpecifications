@@ -12,20 +12,13 @@ public class CustomType implements Comparable<CustomType>  {
     private String validationRule="";
     private String path;
     private String definition;
-    private String fieldDefinition;
-    private String date;
-    private String dateTime;
-    private String choiceType;
-    private String maxLength;
-    private String minLength;
     private String regex;
     private CustomType parent;
     private boolean isChecked = false;
-    private ArrayList<CustomType> children = new ArrayList<>();
+    private final ArrayList<CustomType> children = new ArrayList<>();
+
     public CustomType() {
-
     }
-
 
     public void setLvl(int lvl) {
         this.lvl = lvl;
@@ -123,16 +116,8 @@ public class CustomType implements Comparable<CustomType>  {
         this.definition = definition;
     }
 
-    public void setFieldDefinition(String fieldDefinition) {
-        this.fieldDefinition = fieldDefinition;
-    }
-
     public int getLvl() {
         return lvl;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getTag() {
@@ -151,48 +136,8 @@ public class CustomType implements Comparable<CustomType>  {
         return value;
     }
 
-    public String getValidationRule() {
-        return validationRule;
-    }
-
     public String getPath() {
         return path;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public String getFieldDefinition() {
-        return fieldDefinition;
-    }
-
-//    public int getMinOccurs() {
-//        return minOccurs;
-//    }
-//
-//    public int getMaxOccurs() {
-//        return maxOccurs;
-//    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public String getMaxLength() {
-        return maxLength;
-    }
-
-    public String getMinLength() {
-        return minLength;
-    }
-
-    public String getRegex() {
-        return regex;
     }
 
     public CustomType getParent() {
@@ -204,7 +149,7 @@ public class CustomType implements Comparable<CustomType>  {
     }
 
     public boolean isChecked () {
-        return this.isChecked;
+        return !this.isChecked;
     }
 
     public void setChecked (boolean checked) {
@@ -227,12 +172,9 @@ public class CustomType implements Comparable<CustomType>  {
                 ", type='" + type + '\'' +
                 ", regex='" + regex +'\'' +
                 ", value='" + value + '\'' +
-//                ", validationRule='" + validationRule + '\'' +
-//                ", path='" + path + '\'' +
-//                ", definition='" + definition + '\'' +
-//                ", fieldDefinition='" + fieldDefinition + '\'' +
-//                ", minOccurrence='" + minOccurs + '\'' +
-//                ", maxOccurrence='" + maxOccurs + '\'' +
+                ", validationRule='" + validationRule + '\'' +
+                ", path='" + path + '\'' +
+                ", definition='" + definition + '\'' +
                 ", parent='" + parent.getTag() + '\'' +
                 '}';
     }
@@ -273,7 +215,7 @@ public class CustomType implements Comparable<CustomType>  {
                 break;
             }
         }
-        maxLength = "Max" + mx + "Text";
+        String maxLength = "Max" + mx + "Text";
         regex = type.substring(5,type.length()-1);
 
         if (regex.length() > 8) {
@@ -281,11 +223,6 @@ public class CustomType implements Comparable<CustomType>  {
         } else {
             this.type = maxLength;
         }
-//        if(mx.length() > 1) {
-//            this.type = maxLength;
-//        } else {
-//            this.type = regex;
-//        }
     }
 
     @Override

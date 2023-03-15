@@ -99,79 +99,6 @@ public class Main {
         }
     }
 
-
-    /**
-     * First solution without building a tree
-     *
-    private static void readXSDFile(String xsdFile) throws XmlException, IOException {
-        SchemaTypeSystem sts = XmlBeans.compileXsd(
-                new XmlObject[] { XmlObject.Factory.parse(new File(xsdFile)) }, XmlBeans.getBuiltinTypeSystem(), null);
-
-        List allSeenTypes = new ArrayList();
-        allSeenTypes.addAll(Arrays.asList(sts.documentTypes()));
-        allSeenTypes.addAll(Arrays.asList(sts.attributeTypes()));
-        allSeenTypes.addAll(Arrays.asList(sts.globalTypes()));
-
-        for (int i = 0; i < allSeenTypes.size(); i++)
-        {
-            SchemaType sType = (SchemaType) allSeenTypes.get(i);
-
-            if(sType.getEnumerationValues() != null) {
-                for (int j = 0; j < sType.getEnumerationValues().length; j++) {
-                    String value = sType.getEnumerationValues()[j].getStringValue();
-
-                    PaymentRequestPayload p = new PaymentRequestPayload();
-                    p.setValue(value);
-
-                    if (! listContains(p)) {
-                        String result = "Enum value " + value + " of type " + formatName(sType.getName().toString()) + " is not in the CSV file ";
-                        results.add(result);
-                    }
-                }
-            }
-
-            if(sType.getProperties() != null) {
-                for (int j = 0; j < sType.getProperties().length; j++) {
-                    String name = formatName(sType.getProperties()[j].getName().toString());
-
-                    PaymentRequestPayload p = new PaymentRequestPayload();
-                    p.setTag(name);
-
-                    if (!listContains(p)) {
-                        String result = "";
-                        if (sType.getProperties()[j].getContainerType().getName() != null) {
-                            result = "Tag " + name + " of complexType " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the CSV file ";
-                        } else {
-                            result = "Tag " + name + " is not in the CSV file ";
-                        }
-                        results.add(result);
-                    }
-                }
-            }
-
-            allSeenTypes.addAll(Arrays.asList(sType.getAnonymousTypes()));
-        }
-    }
-
-    private static String formatName(String name) {
-        return "<" + name + ">";
-    }
-
-    private static boolean listContains(CustomType p) {
-        for (int i = 0; i < csvInfo.size(); i++) {
-            CustomType q = csvInfo.get(i);
-            String tag = q.getTag();
-
-            if(! tag.equals("") && ! p.getTag().isEmpty() && p.getTag() != null) {
-                if (tag.equals(p.getTag())) return true;
-            } else if (tag.equals("") && ! p.getValue().isEmpty()){
-                if (q.getValue().equals(p.getValue())) return true;
-            }
-        }
-        return false;
-    }
-     **/
-
     public static void buildTree () {
         int depth = getDepth();
         ArrayList<Integer> indexes = new ArrayList<>(depth+1);
@@ -198,20 +125,6 @@ public class Main {
         }
     }
 
-    /**
-     * Printing tree for testing purposes
-     *
-    public static void printTree(ArrayList<CustomType> arr, String tab) {
-        for (CustomType customType : arr) {
-            if (!customType.getTag().equals("") && !customType.getTag().isEmpty() && customType.getTag() != null) {
-                System.out.println(tab + customType.getTag() + " " + customType.getType() + " " + customType.getOccur());
-            } else {
-                System.out.println(tab + customType.getValue() + " " + customType.getType() + " " + customType.getOccur());
-            }
-            printTree(customType.getChildren(), tab + "\t");
-        }
-    }
-     **/
     public static int getDepth () {
         int max = -1;
         int curLevel;
@@ -345,7 +258,7 @@ public class Main {
 
         for (CustomType currentXSD : childrenQ) {
             for (CustomType currentCSV : childrenP) {
-                if (!currentCSV.isChecked()) {
+                if (currentCSV.isChecked()) {
                     if (currentXSD.getTag().equals("") || currentXSD.getTag().isEmpty()) {
                         if (currentXSD.getValue().equals(currentCSV.getValue())) {
                             currentCSV.setChecked(true);
@@ -360,8 +273,12 @@ public class Main {
                     }
                 }
             }
-            if (!currentXSD.isChecked()) {
-                results.add(currentXSD.getPath() + " In CSV file object " + p.getTag() + " doesn't have child " + currentXSD.getTag());
+            if (currentXSD.isChecked()) {
+                String current = currentXSD.getTag();
+                if (currentXSD.getTag().isEmpty()) {
+                    current = currentXSD.getValue();
+                }
+                results.add(currentXSD.getPath() + " In CSV file object " + p.getTag() + " doesn't have a child " + current);
             }
         }
     }
@@ -374,4 +291,91 @@ public class Main {
             compareTrees(p, q.getChildren().get(0));
         }
     }
+
+    /**
+     * Printing tree for testing purposes
+     *
+     public static void printTree(ArrayList<CustomType> arr, String tab) {
+     for (CustomType customType : arr) {
+     if (!customType.getTag().equals("") && !customType.getTag().isEmpty() && customType.getTag() != null) {
+     System.out.println(tab + customType.getTag() + " " + customType.getType() + " " + customType.getOccur());
+     } else {
+     System.out.println(tab + customType.getValue() + " " + customType.getType() + " " + customType.getOccur());
+     }
+     printTree(customType.getChildren(), tab + "\t");
+     }
+     }
+     **/
+
+    /**
+     * First solution without building a tree
+     *
+     private static void readXSDFile(String xsdFile) throws XmlException, IOException {
+     SchemaTypeSystem sts = XmlBeans.compileXsd(
+     new XmlObject[] { XmlObject.Factory.parse(new File(xsdFile)) }, XmlBeans.getBuiltinTypeSystem(), null);
+
+     List allSeenTypes = new ArrayList();
+     allSeenTypes.addAll(Arrays.asList(sts.documentTypes()));
+     allSeenTypes.addAll(Arrays.asList(sts.attributeTypes()));
+     allSeenTypes.addAll(Arrays.asList(sts.globalTypes()));
+
+     for (int i = 0; i < allSeenTypes.size(); i++)
+     {
+     SchemaType sType = (SchemaType) allSeenTypes.get(i);
+
+     if(sType.getEnumerationValues() != null) {
+     for (int j = 0; j < sType.getEnumerationValues().length; j++) {
+     String value = sType.getEnumerationValues()[j].getStringValue();
+
+     PaymentRequestPayload p = new PaymentRequestPayload();
+     p.setValue(value);
+
+     if (! listContains(p)) {
+     String result = "Enum value " + value + " of type " + formatName(sType.getName().toString()) + " is not in the CSV file ";
+     results.add(result);
+     }
+     }
+     }
+
+     if(sType.getProperties() != null) {
+     for (int j = 0; j < sType.getProperties().length; j++) {
+     String name = formatName(sType.getProperties()[j].getName().toString());
+
+     PaymentRequestPayload p = new PaymentRequestPayload();
+     p.setTag(name);
+
+     if (!listContains(p)) {
+     String result = "";
+     if (sType.getProperties()[j].getContainerType().getName() != null) {
+     result = "Tag " + name + " of complexType " + formatName(sType.getProperties()[j].getContainerType().getName().toString()) + " is not in the CSV file ";
+     } else {
+     result = "Tag " + name + " is not in the CSV file ";
+     }
+     results.add(result);
+     }
+     }
+     }
+
+     allSeenTypes.addAll(Arrays.asList(sType.getAnonymousTypes()));
+     }
+     }
+
+     private static String formatName(String name) {
+     return "<" + name + ">";
+     }
+
+     private static boolean listContains(CustomType p) {
+     for (int i = 0; i < csvInfo.size(); i++) {
+     CustomType q = csvInfo.get(i);
+     String tag = q.getTag();
+
+     if(! tag.equals("") && ! p.getTag().isEmpty() && p.getTag() != null) {
+     if (tag.equals(p.getTag())) return true;
+     } else if (tag.equals("") && ! p.getValue().isEmpty()){
+     if (q.getValue().equals(p.getValue())) return true;
+     }
+     }
+     return false;
+     }
+     **/
 }
