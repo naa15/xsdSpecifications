@@ -17,6 +17,12 @@ public class CustomType implements Comparable<CustomType>  {
     private boolean isChecked = false;
     private final ArrayList<CustomType> children = new ArrayList<>();
 
+    public ArrayList<String> getErrors() {
+        return errors;
+    }
+
+    private final ArrayList<String> errors = new ArrayList<>();
+
     public CustomType() {
     }
 
@@ -33,6 +39,11 @@ public class CustomType implements Comparable<CustomType>  {
     }
 
     public void setOccur(String occur) {
+        if (occur == null || occur.isEmpty() || occur.equals("") || occur.equals(" ")) {
+            this.occur = "[NOT SET!]";
+            return;
+        }
+
         if(occur.length() < 5) {
             this.occur = occur;
             return;
@@ -149,7 +160,7 @@ public class CustomType implements Comparable<CustomType>  {
     }
 
     public boolean isChecked () {
-        return !this.isChecked;
+        return this.isChecked;
     }
 
     public void setChecked (boolean checked) {
@@ -162,6 +173,7 @@ public class CustomType implements Comparable<CustomType>  {
     public void addChild(CustomType child) {
         children.add(child);
     }
+    public void addError(String str) { errors.add(str); }
     @Override
     public String toString() {
         return "{" +
